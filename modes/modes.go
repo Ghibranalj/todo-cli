@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+
+	"github.com/charmbracelet/glamour"
 )
 
 var Editor string
@@ -64,7 +66,10 @@ func Print(mode string) {
 	file, err := ioutil.ReadFile(Path + "/" + filename)
 	check(err)
 	fmt.Println(head)
-	fmt.Println(string(file[:]))
+	// fmt.Println(string(file[:]))
+	out, err := glamour.Render(string(file[:]), "dark")
+	check(err)
+	fmt.Print(out)
 }
 
 func Edit(mode string) {
