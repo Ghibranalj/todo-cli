@@ -40,7 +40,7 @@ func main() {
 	args = append(args, "")
 
 	switch strings.ToLower(args[0]) {
-	case "edit":
+	case "edit", "write":
 		modes.Edit(args[1])
 	case "show", "print":
 		modes.Print(args[1])
