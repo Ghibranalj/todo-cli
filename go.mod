@@ -2,10 +2,11 @@ module github.com/Ghibranalj/todo-cli
 
 go 1.17
 
+require github.com/charmbracelet/glamour v0.3.0
+
 require (
 	github.com/alecthomas/chroma v0.8.2 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/charmbracelet/glamour v0.3.0 // indirect
 	github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964 // indirect
 	github.com/dlclark/regexp2 v1.2.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
