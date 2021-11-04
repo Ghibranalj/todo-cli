@@ -37,16 +37,17 @@ func main() {
 		modes.Help()
 		return
 	}
+	args = append(args, "")
 
 	switch strings.ToLower(args[0]) {
-	case "todo", "todos":
-		modes.Todo(args[1:])
-	case "idea", "ideas":
-		modes.Idea(args[1:])
+	case "edit":
+		modes.Edit(args[1])
+	case "show", "print":
+		modes.Print(args[1])
 	case "help":
 		modes.Help()
 	default:
-		fmt.Printf("action %s not found \n", args[0])
+		fmt.Printf("Action %s not found \n", args[0])
 		modes.Help()
 	}
 }

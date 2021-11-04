@@ -34,21 +34,31 @@ func check(e error) {
 	}
 }
 
-func print(mode string) {
+func Print(mode string) {
 
 	filename := ""
 	head := ""
 
 	switch mode {
-	case "todos":
+	case "todos", "todo":
 		filename = "todos"
 		head = todoHead
 
-	case "ideas":
+	case "ideas", "idea":
 		filename = "ideas"
 		head = ideaHead
 	default:
-		return
+		fmt.Println("What do you want to print")
+		fmt.Println("[1] Todos")
+		fmt.Println("[2] Ideas")
+		filenames := []string{"todos", "ideas"}
+		i := 1
+		fmt.Scanf("%d", &i)
+		head = todoHead
+		if i == 2 {
+			head = ideaHead
+		}
+		filename = filenames[i-1]
 	}
 
 	file, err := ioutil.ReadFile(Path + "/" + filename)
@@ -57,8 +67,24 @@ func print(mode string) {
 	fmt.Println(string(file[:]))
 }
 
-func edit(mode string) {
-	cmd := exec.Command(Editor, Path+"/"+mode)
+func Edit(mode string) {
+	filename := ""
+	switch mode {
+	case "todos", "todo":
+		filename = "todos"
+
+	case "ideas", "idea":
+		filename = "ideas"
+	default:
+		fmt.Println("What do you want to edit")
+		fmt.Println("[1] Todos")
+		fmt.Println("[2] Ideas")
+		filenames := []string{"todos", "ideas"}
+		i := 1
+		fmt.Scanf("%d", &i)
+		filename = filenames[i-1]
+	}
+	cmd := exec.Command(Editor, Path+"/"+filename)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	err := cmd.Run()
