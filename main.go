@@ -14,7 +14,7 @@ import (
 //$HOME/.todo-cli/ideas
 //$HOME/.todo-cli/todos
 // can edit with editor of choise
-// editor saven in $HOME/
+// editor saved in $HOME/
 
 type conf struct {
 	Editor string `json:"editor"`
@@ -31,23 +31,24 @@ func check(e error) {
 }
 func main() {
 
-	args := os.Args[:1]
+	args := os.Args[1:]
+
+	if len(args) == 0 {
+		modes.Help()
+		return
+	}
 
 	switch strings.ToLower(args[0]) {
 	case "todo", "todos":
-		modes.Todo(args[1])
+		modes.Todo(args[1:])
 	case "idea", "ideas":
-		modes.Idea(args[1])
+		modes.Idea(args[1:])
 	case "help":
-		help()
+		modes.Help()
 	default:
 		fmt.Printf("action %s not found \n", args[0])
-		help()
+		modes.Help()
 	}
-}
-
-func help() {
-
 }
 
 func init() {
@@ -81,6 +82,9 @@ func init() {
 	check(err)
 
 	modes.Editor = Conf.Editor
+	modes.Path = Path
+
+	modes.Init()
 }
 
 func askForEditor() string {
@@ -91,7 +95,7 @@ func askForEditor() string {
 	editors := []string{}
 	for _, posEditor := range posEditors {
 		out, _ := exec.Command("/usr/bin/which", posEditor).Output()
-		outS := string(out[:])
+		outS := strings.TrimSuffix(string(out[:]), "\n")
 		if outS == "" {
 			continue
 		}
@@ -103,7 +107,7 @@ func askForEditor() string {
 		os.Exit(1)
 	}
 	for i, editor := range editors {
-		fmt.Printf("[%d] %s", i+1, editor)
+		fmt.Printf("[%d] %s \n", i+1, editor)
 	}
 	i := 1
 	fmt.Print("Select your editor [default:1]")

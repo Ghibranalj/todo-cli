@@ -1,5 +1,10 @@
 package modes
 
-func Todo(operation string) {
-
+func Todo(args []string) {
+	switch args[0] {
+	case "print", "show":
+		print("todos")
+	case "edit", "write":
+		edit("todos")
+	}
 }
