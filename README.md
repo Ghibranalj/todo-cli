@@ -1,19 +1,13 @@
 # todo-cli by Ghibranalj
 
-#### a TODO and IDEA cli
-
-## TODOs:
-1. better cli parser
-2. ~~markdown support~~
-3. multiple ideas and todo files
+#### a TODO cli with markdown support
 
 ## Usage 
-### todo-cli [mode] [target]
+### todo-cli [command] (todo)
+### commands: 
+	add    : add a todo to your todo list
+	edit   : edit a todo in your todo list
+    print  : print a todo in your todo list or print all if (todo) is empty
+    remove : remove a todo in your todo list
+    help   : show this message
 
-#### Target: 
-	todos, todo : your todos.
-	idea, ideas : your ideas.
-
-#### Modes:
-	print, show : print [target] to STDOUT.
-	edit, write : edit [target] using selected editor.

@@ -1,16 +1,27 @@
 package modes
 
-import "fmt"
+import (
+	"fmt"
 
+	"github.com/charmbracelet/glamour"
+)
+
+// TODO use markdown
 func Help() {
-	fmt.Println(`
-TODO-cli by Ghibranalj.
-Usage : todo-cli [mode] [target]
+	helpmd := `
+todo-cli by Ghibranalj
+# Usage :
+## todo-cli [command] (todo)
+	commands:
+	add    : add a todo to your todo list
+	edit   : edit a todo in your todo list
+	print  : print a todo in your todo list or print all if (todo) is empty
+	remove : remove a todo in your todo list
+	help   : show this message`
 
-Target: 
-	todos, todo : your todos.
-	idea, ideas : your ideas.
-Modes:
-	print, show : print [target] to STDOUT.
-	edit, write : edit [target] using selected editor.`)
+	out, err := glamour.Render(helpmd, "dark")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println(out)
 }
