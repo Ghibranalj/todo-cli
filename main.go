@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/Ghibranalj/todo-cli/db"
 	"github.com/Ghibranalj/todo-cli/modes"
 )
 
@@ -34,22 +35,36 @@ func main() {
 	args := os.Args[1:]
 
 	if len(args) == 0 {
-		modes.Help()
-		return
+		args = append(args, "help")
 	}
-	args = append(args, "")
 
-	switch strings.ToLower(args[0]) {
-	case "edit", "write":
-		modes.Edit(args[1])
-	case "show", "print":
-		modes.Print(args[1])
-	case "help":
+	command, option := args[0], ""
+
+	if len(args) >= 2 {
+		option = args[1]
+	}
+
+	switch command {
+	case "add":
+		modes.Add()
+	case "edit":
+		modes.Edit(option)
+	case "print":
+		if option == "" {
+			modes.PrintAll()
+		} else {
+			modes.Print(option)
+		}
+	case "remove", "delete":
+		modes.Remove(option)
+	case "", "help":
 		modes.Help()
 	default:
-		fmt.Printf("Action %s not found \n", args[0])
+		fmt.Printf("Command %s not valid\n", command)
 		modes.Help()
 	}
+
+	db.Save()
 }
 
 func init() {
@@ -75,17 +90,15 @@ func init() {
 		check(err)
 
 	}
-
 	byteConf, err := ioutil.ReadFile(Path + "/conf.json")
 	check(err)
 
 	err = json.Unmarshal(byteConf, &Conf)
 	check(err)
 
-	modes.Editor = Conf.Editor
-	modes.Path = Path
-
-	modes.Init()
+	err = db.Init(Path)
+	check(err)
+	modes.Init(Path, Conf.Editor)
 }
 
 func askForEditor() string {

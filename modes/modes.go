@@ -2,109 +2,121 @@ package modes
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
-	"os/exec"
+	"strconv"
 
+	"github.com/Ghibranalj/todo-cli/db"
+	"github.com/Ghibranalj/todo-cli/utils"
 	"github.com/charmbracelet/glamour"
 )
 
-var Editor string
-var Path string
+var filePath, editor string
 
 const (
-	todoHead = ` _______   ____    _____     ____  
-|__  __|  / __ \  |  __ \   / __ \ 
-  | |    | |  | | | |  | | | |  | |
-  | |    | |  | | | |  | | | |  | |
-  | |    | |__| | | |__| | | |__| |
-  |_|     \____/  |_____/   \____/ `
-
-	ideaHead = `_____    _____    ______               _____ 
-|_   _| |  __  \ |  ____|     /\      / ____|
-  | |   | |  | | | |__       /  \    | (___  
-  | |   | |  | | |  __|     / /\ \    \___ \ 
- _| |_  | |__| | | |____   / ____ \   ____) |
-|_____| |_____/  |______| /_/    \_\ |_____/ 
-`
+	// 	head = ` _______   ____    _____     ____
+	// |__  __|  / __ \  |  __ \   / __ \
+	//   | |    | |  | | | |  | | | |  | |
+	//   | |    | |  | | | |  | | | |  | |
+	//   | |    | |__| | | |__| | | |__| |
+	//   |_|     \____/  |_____/   \____/ `
+	colorPurple = "\033[35m"
+	colorReset  = "\033[0m"
+	colorRed    = "\033[31m"
+	head        = `
+*****  ****  ****   ****
+  *    *  *  *   *  *  *
+  *    *  *  *   *  *  *
+  *    ****  ****   ****
+  `
 )
 
 func check(e error) {
 	if e != nil {
-		fmt.Printf("There is an Error: %s \n", e.Error())
+		fmt.Printf("Error: %s \n", e.Error())
 		os.Exit(1)
 	}
 }
 
-func Print(mode string) {
-
-	filename := ""
-	head := ""
-
-	switch mode {
-	case "todos", "todo":
-		filename = "todos"
-		head = todoHead
-
-	case "ideas", "idea":
-		filename = "ideas"
-		head = ideaHead
-	default:
-		fmt.Println("What do you want to print")
-		fmt.Println("[1] Todos")
-		fmt.Println("[2] Ideas")
-		filenames := []string{"todos", "ideas"}
-		i := 1
-		fmt.Scanf("%d", &i)
-		head = todoHead
-		if i == 2 {
-			head = ideaHead
-		}
-		filename = filenames[i-1]
-	}
-
-	file, err := ioutil.ReadFile(Path + "/" + filename)
+func Print(number string) {
+	i, err := strconv.Atoi(number)
+	i--
 	check(err)
-	fmt.Println(head)
-	// fmt.Println(string(file[:]))
-	out, err := glamour.Render(string(file[:]), "dark")
+	todo := db.Read(i)
+
+	out, err := glamour.Render(todo, "dark")
 	check(err)
-	fmt.Print(out)
+
+	fmt.Println(string(colorPurple), head, string(colorReset))
+	fmt.Printf("Todo Number : %s%d%s\n", string(colorRed), i+1, string(colorReset))
+	fmt.Println(out)
 }
 
-func Edit(mode string) {
-	filename := ""
-	switch mode {
-	case "todos", "todo":
-		filename = "todos"
-
-	case "ideas", "idea":
-		filename = "ideas"
-	default:
-		fmt.Println("What do you want to edit")
-		fmt.Println("[1] Todos")
-		fmt.Println("[2] Ideas")
-		filenames := []string{"todos", "ideas"}
-		i := 1
-		fmt.Scanf("%d", &i)
-		filename = filenames[i-1]
+func PrintAll() {
+	fmt.Println(string(colorPurple), head, string(colorReset))
+	for i, todo := range db.ReadAll() {
+		out, _ := glamour.Render(todo, "dark")
+		fmt.Println("--------------")
+		fmt.Printf("Todo Number : %s%d%s\n", string(colorRed), i+1, string(colorReset))
+		fmt.Println(out)
 	}
-	cmd := exec.Command(Editor, Path+"/"+filename)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	err := cmd.Run()
+}
+
+func Edit(number string) {
+	if number == "" {
+		fmt.Println("please input the a todo number to edit")
+		return
+	}
+	i, err := strconv.Atoi(number)
+	i--
+	check(err)
+	//get from db
+	content := db.Read(i)
+	// write to file
+	err = utils.WriteToFile(filePath, content)
+	check(err)
+	// edit
+	err = utils.EditFile(filePath, editor)
+	check(err)
+	// read
+	content, err = utils.ReadFile(filePath)
+	check(err)
+	//clear file
+	err = utils.WriteToFile(filePath, "")
+	check(err)
+	// store
+	err = db.Replace(i, content)
+	check(err)
+
+}
+
+func Add() {
+	// make a file
+	err := utils.EditFile(filePath, editor)
+	check(err)
+
+	// read the file
+	content, err := utils.ReadFile(filePath)
+	// put it in database
+	check(err)
+	db.Add(content)
+	// empty the file
+	err = utils.WriteToFile(filePath, "")
+
 	check(err)
 }
 
-func Init() {
-	if _, err := os.Stat(Path + "/todos"); os.IsNotExist(err) {
-		err = os.WriteFile(Path+"/todos", []byte(""), 0644)
-		check(err)
+func Remove(number string) {
+	if number == "" {
+		fmt.Println("please input the a todo number to delete")
+		return
 	}
+	i, err := strconv.Atoi(number)
+	check(err)
 
-	if _, err := os.Stat(Path + "/ideas"); os.IsNotExist(err) {
-		err = os.WriteFile(Path+"/ideas", []byte(""), 0644)
-		check(err)
-	}
+	db.Del(i - 1)
+}
 
+func Init(path, editorP string) {
+	editor = editorP
+	filePath = path + "/todo_temp.md"
 }
