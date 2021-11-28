@@ -84,3 +84,7 @@ func Del(i int) error {
 	db.Todos = db.Todos[:len(db.Todos)-1] // Truncate slice.
 	return nil
 }
+
+func Size() int {
+	return len(db.Todos)
+}

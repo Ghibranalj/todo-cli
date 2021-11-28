@@ -55,6 +55,18 @@ func main() {
 		} else {
 			modes.Print(option)
 		}
+	case "check":
+		if modes.Check() {
+			os.Exit(0)
+		}
+		os.Exit(1)
+	case "bashrc":
+		out := `todo-cli check 2> /dev/null
+if [ $? ]
+then
+	todo-cli print
+fi`
+		fmt.Println(out)
 	case "remove", "delete":
 		modes.Remove(option)
 	case "", "help":

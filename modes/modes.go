@@ -22,12 +22,10 @@ const (
 	colorPurple = "\033[35m"
 	colorReset  = "\033[0m"
 	colorRed    = "\033[31m"
-	head        = `
-*****  ****  ****   ****
-  *    *  *  *   *  *  *
-  *    *  *  *   *  *  *
-  *    ****  ****   ****
-  `
+	head        = `*****  ****  ****   ****
+   *    *  *  *   *  *  *
+   *    *  *  *   *  *  *
+   *    ****  ****   ****`
 )
 
 func check(e error) {
@@ -119,4 +117,8 @@ func Remove(number string) {
 func Init(path, editorP string) {
 	editor = editorP
 	filePath = path + "/todo_temp.md"
+}
+
+func Check() bool {
+	return db.Size() > 0
 }

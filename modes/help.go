@@ -17,7 +17,9 @@ todo-cli by Ghibranalj
 	edit   : edit a todo in your todo list
 	print  : print a todo in your todo list or print all if (todo) is empty
 	remove : remove a todo in your todo list
-	help   : show this message`
+	help   : show this message
+	check  : $? will be 0 if there is todo in todo list
+	bashrc : print bash script for .bashrc`
 
 	out, err := glamour.Render(helpmd, "dark")
 	if err != nil {
