@@ -62,7 +62,7 @@ func main() {
 		os.Exit(1)
 	case "bashrc":
 		out := `todo-cli check 2> /dev/null
-if [ $? ]
+if [ $? -eq 0 ] && [ "$PWD" == "$HOME" ]
 then
 	todo-cli print
 fi`
@@ -116,7 +116,7 @@ func init() {
 func askForEditor() string {
 
 	posEditors := []string{
-		"nano", "nvim", "vim", "emacs",
+		"nano", "nvim", "vim", "emacs", "code", "vi",
 	}
 	editors := []string{}
 	for _, posEditor := range posEditors {
