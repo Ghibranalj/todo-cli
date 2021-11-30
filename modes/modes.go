@@ -19,6 +19,7 @@ const (
 	//   | |    | |  | | | |  | | | |  | |
 	//   | |    | |__| | | |__| | | |__| |
 	//   |_|     \____/  |_____/   \____/ `
+	colorOrange = "\033[38;5;166m"
 	colorPurple = "\033[35m"
 	colorReset  = "\033[0m"
 	colorRed    = "\033[31m"
@@ -44,13 +45,13 @@ func Print(number string) {
 	out, err := glamour.Render(todo, "dark")
 	check(err)
 
-	fmt.Println(string(colorPurple), head, string(colorReset))
+	fmt.Println(string(colorOrange), head, string(colorReset))
 	fmt.Printf("Todo Number : %s%d%s\n", string(colorRed), i+1, string(colorReset))
 	fmt.Println(out)
 }
 
 func PrintAll() {
-	fmt.Println(string(colorPurple), head, string(colorReset))
+	fmt.Println(string(colorOrange), head, string(colorReset))
 	for i, todo := range db.ReadAll() {
 		out, _ := glamour.Render(todo, "dark")
 		fmt.Println("--------------")
