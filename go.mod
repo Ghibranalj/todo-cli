@@ -1,6 +1,6 @@
 module github.com/Ghibranalj/todo-cli
 
-go 1.17
+go 1.21
 
 require github.com/charmbracelet/glamour v0.3.0
 
