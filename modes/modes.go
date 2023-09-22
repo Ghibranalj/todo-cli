@@ -123,3 +123,9 @@ func Init(path, editorP string) {
 func Check() bool {
 	return db.Size() > 0
 }
+
+func Reset() {
+	// remove $HOME/.todo-cli/conf.json
+	err := os.Remove(os.Getenv("HOME") + "/.todo-cli/conf.json")
+	check(err)
+}

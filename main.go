@@ -3,10 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"os/exec"
-	"strings"
 
 	"github.com/Ghibranalj/todo-cli/db"
 	"github.com/Ghibranalj/todo-cli/modes"
@@ -45,6 +42,9 @@ func main() {
 	}
 
 	switch command {
+
+	case "reset":
+		modes.Reset()
 	case "add":
 		modes.Add()
 	case "edit":
@@ -80,21 +80,26 @@ fi`
 }
 
 func init() {
-
 	home, err := os.UserHomeDir()
-
 	check(err)
 
 	Path = home + "/.todo-cli"
-
 	if _, err := os.Stat(Path); os.IsNotExist(err) {
 		err := os.Mkdir(Path, 0700)
 		check(err)
 	}
 
+	editor := os.Getenv("EDITOR")
+
+	for editor == "" {
+		// ask for editor
+		fmt.Println("Please enter your editor of choise")
+		fmt.Scanln(&editor)
+	}
+
 	if _, err := os.Stat(Path + "/conf.json"); os.IsNotExist(err) {
 		conf := conf{
-			Editor: askForEditor(),
+			Editor: editor,
 		}
 		confText, _ := json.Marshal(conf)
 
@@ -102,7 +107,7 @@ func init() {
 		check(err)
 
 	}
-	byteConf, err := ioutil.ReadFile(Path + "/conf.json")
+	byteConf, err := os.ReadFile(Path + "/conf.json")
 	check(err)
 
 	err = json.Unmarshal(byteConf, &Conf)
@@ -111,36 +116,4 @@ func init() {
 	err = db.Init(Path)
 	check(err)
 	modes.Init(Path, Conf.Editor)
-}
-
-func askForEditor() string {
-
-	posEditors := []string{
-		"nano", "nvim", "vim", "emacs", "code", "vi",
-	}
-	editors := []string{}
-	for _, posEditor := range posEditors {
-		out, _ := exec.Command("/usr/bin/which", posEditor).Output()
-		outS := strings.TrimSuffix(string(out[:]), "\n")
-		if outS == "" {
-			continue
-		}
-		editors = append(editors, outS)
-	}
-
-	if len(editors) == 0 {
-		fmt.Printf("There is an Error: %s \n", "no editor can be found")
-		os.Exit(1)
-	}
-	for i, editor := range editors {
-		fmt.Printf("[%d] %s \n", i+1, editor)
-	}
-	i := 1
-	fmt.Print("Select your editor [default:1]")
-	_, err := fmt.Scanf("%d", &i)
-	if err != nil || i > len(editors) {
-		fmt.Println("Default value (1) selected")
-		i = 1
-	}
-	return editors[i-1]
 }

@@ -19,7 +19,10 @@ func WriteToFile(path, content string) error {
 }
 
 func EditFile(path, editor string) error {
-	cmd := exec.Command(editor, path)
+
+
+	// run bash -c "editor path"
+	cmd := exec.Command("bash", "-c", editor+" "+path)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	err := cmd.Run()

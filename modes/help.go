@@ -19,7 +19,9 @@ todo-cli by Ghibranalj
 	remove : remove a todo in your todo list
 	help   : show this message
 	check  : $? will be 0 if there is todo in todo list
-	bashrc : print bash script for .bashrc`
+	bashrc : print bash script for .bashrc
+	reset  : reset config like your editor
+`
 
 	out, err := glamour.Render(helpmd, "dark")
 	if err != nil {
